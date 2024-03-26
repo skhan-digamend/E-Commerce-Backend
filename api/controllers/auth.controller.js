@@ -1,20 +1,28 @@
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from 'bcryptjs';
+
+//signup Functionality
 export const signup = async (req, res,next) => {
-  const { username, email, phone, password } = req.body;
+  const { username, email, phone, password, confirmpassword } = req.body;
 
   if (
     !username ||
     !email ||
     !phone ||
     !password ||
+    !confirmpassword||
     username === "" ||
     email === "" ||
     phone === "" ||
-    password === ""
+    password === ""||
+    confirmpassword===""
   ) {
     next(errorHandler(400,'All fields are required'));
+  }
+
+  if (password !== confirmpassword) {
+    next(errorHandler(400, 'Password do not match'));
   }
 
   const hashedPassword= bcryptjs.hashSync(password,10);
@@ -24,6 +32,7 @@ export const signup = async (req, res,next) => {
     email,
     phone,
     password:hashedPassword,
+    confirmpassword
   });
   try {
     await newUser.save();
@@ -32,3 +41,10 @@ export const signup = async (req, res,next) => {
     next(error);
   }
 };
+
+
+//Signin functionality
+
+export const signin = async(req,res,next)=>{
+
+}
