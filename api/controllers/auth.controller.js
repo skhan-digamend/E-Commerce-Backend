@@ -1,9 +1,10 @@
 import User from "../models/user.model.js";
 import { errorHandler } from "../utils/error.js";
-import bcryptjs from 'bcryptjs';
+import bcryptjs from "bcryptjs";
+import jwt from 'jsonwebtoken'
 
 //signup Functionality
-export const signup = async (req, res,next) => {
+export const signup = async (req, res, next) => {
   const { username, email, phone, password, confirmpassword } = req.body;
 
   if (
@@ -11,28 +12,29 @@ export const signup = async (req, res,next) => {
     !email ||
     !phone ||
     !password ||
-    !confirmpassword||
+    !confirmpassword ||
     username === "" ||
     email === "" ||
     phone === "" ||
-    password === ""||
-    confirmpassword===""
+    password === "" ||
+    confirmpassword === ""
   ) {
-    next(errorHandler(400,'All fields are required'));
+    next(errorHandler(400, "All fields are required"));
   }
 
   if (password !== confirmpassword) {
-    next(errorHandler(400, 'Password do not match'));
+    next(errorHandler(400, "Password do not match"));
   }
+//   if (phone.len)
 
-  const hashedPassword= bcryptjs.hashSync(password,10);
+  const hashedPassword = bcryptjs.hashSync(password, 10);
 
   const newUser = new User({
     username,
     email,
     phone,
-    password:hashedPassword,
-    confirmpassword :hashedPassword
+    password: hashedPassword,
+    confirmpassword: hashedPassword,
   });
   try {
     await newUser.save();
@@ -42,9 +44,37 @@ export const signup = async (req, res,next) => {
   }
 };
 
-
 //Signin functionality
 
-export const signin = async(req,res,next)=>{
+export const signin = async (req, res, next) => {
+  const {email, password,confirmpassword} = req.body;
 
-}
+  if(!email || !password || !email=== '' ||  password === ''){
+    next(errorHandler(400, 'All fields are required'));
+  }
+  try{
+    const validUser = await User.findOne({email});
+    if(!validUser){
+     return next(errorHandler(404,'User not found'));
+    }
+    const validPassword = bcryptjs.compareSync(password, validUser.password);
+    if(!validPassword){
+     return next(errorHandler(400,'Invalid password'));
+    }
+    const token = jwt.sign(
+      {id: validUser._id}, process.env.JWT_SECRET);
+
+      //to hide the passwasd from the returned signin information and return the same for security purpose
+      //separating password and rest of the information and sending the rest.
+      const{ password: pass,confirmpassword: confirmpassword, ...rest}= validUser._doc;
+
+
+      res.status(200).cookie('access_token', token,{
+        httpOnly: true,
+      })
+      .json(rest);
+  }catch(error){
+    next(error);
+
+  }
+};
