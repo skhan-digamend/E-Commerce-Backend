@@ -25,7 +25,6 @@ export const signup = async (req, res, next) => {
   if (password !== confirmpassword) {
     next(errorHandler(400, "Password do not match"));
   }
-//   if (phone.len)
 
   const hashedPassword = bcryptjs.hashSync(password, 10);
 
