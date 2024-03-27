@@ -77,3 +77,38 @@ export const signin = async (req, res, next) => {
 
   }
 };
+
+//signin as guest
+
+export const signinasguest = async (req, res, next) => {
+  const {username,phone,password,confirmpassword} = req.body;
+
+  if(!username || !phone || !username=== '' ||  phone === ''){
+    next(errorHandler(400, 'All fields are required'));
+  }
+  try{
+    const validGuestUsername = await User.findOne({username});
+    if(!validGuestUsername){
+     return next(errorHandler(404,'Invalid username'));
+    }
+    const validGuestPhone = await User.findOne({phone});
+    if(!validGuestPhone){
+     return next(errorHandler(400,'Phone number not exist'));
+    }
+    const token = jwt.sign(
+      {id: validGuestUsername._id}, process.env.JWT_SECRET);
+
+      //to hide the passwasd from the returned signin information and return the same for security purpose
+      //separating password and rest of the information and sending the rest.
+      const{ password: pass,confirmpassword: confirmpassword, ...rest}= validGuestUsername._doc;
+
+
+      res.status(200).cookie('access_token', token,{
+        httpOnly: true,
+      })
+      .json(rest);
+  }catch(error){
+    next(error);
+
+  }
+};

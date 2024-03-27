@@ -6,6 +6,8 @@ export const test = (req,res)=>{
     res.json({message: ' API is working!'});
 }
 
+//delete account functionality
+
 export const deleteUser = async (req,res, next)=>{
     if(req.user.id !== req.params.userId){
         return next(errorHandler(403, 'You are not allowed to delete this user'));
@@ -15,5 +17,16 @@ export const deleteUser = async (req,res, next)=>{
         res.status(200).json('User has been deleted');
     } catch (error) {
         next(error);
+    }
+}
+
+
+//logout functionality
+export const logout = (req,res,next)=>{
+    try {
+        res.clearCookie('access_token').status(200).json("User has been signed out");
+    } catch (error) {
+        next(error);
+        
     }
 }
