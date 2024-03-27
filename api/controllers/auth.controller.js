@@ -5,15 +5,15 @@ import jwt from 'jsonwebtoken'
 
 //signup Functionality
 export const signup = async (req, res, next) => {
-  const { username, email, phone, password, confirmpassword } = req.body;
+  const { name, email, phone, password, confirmpassword } = req.body;
 
   if (
-    !username ||
+    !name ||
     !email ||
     !phone ||
     !password ||
     !confirmpassword ||
-    username === "" ||
+    name === "" ||
     email === "" ||
     phone === "" ||
     password === "" ||
@@ -29,7 +29,7 @@ export const signup = async (req, res, next) => {
   const hashedPassword = bcryptjs.hashSync(password, 10);
 
   const newUser = new User({
-    username,
+    name,
     email,
     phone,
     password: hashedPassword,
@@ -81,26 +81,26 @@ export const signin = async (req, res, next) => {
 //signin as guest
 
 export const signinasguest = async (req, res, next) => {
-  const {username,phone,password,confirmpassword} = req.body;
+  const {name,phone,password,confirmpassword} = req.body;
 
-  if(!username || !phone || !username=== '' ||  phone === ''){
+  if(!name || !phone || !name=== '' ||  phone === ''){
     next(errorHandler(400, 'All fields are required'));
   }
   try{
-    const validGuestUsername = await User.findOne({username});
-    if(!validGuestUsername){
-     return next(errorHandler(404,'Invalid username'));
+    const validGuestname = await User.findOne({name});
+    if(!validGuestname){
+     return next(errorHandler(404,'Invalid name'));
     }
     const validGuestPhone = await User.findOne({phone});
     if(!validGuestPhone){
      return next(errorHandler(400,'Phone number not exist'));
     }
     const token = jwt.sign(
-      {id: validGuestUsername._id}, process.env.JWT_SECRET);
+      {id: validGuestname._id}, process.env.JWT_SECRET);
 
       //to hide the passwasd from the returned signin information and return the same for security purpose
       //separating password and rest of the information and sending the rest.
-      const{ password: pass,confirmpassword: confirmpassword, ...rest}= validGuestUsername._doc;
+      const{ password: pass,confirmpassword: confirmpassword, ...rest}= validGuestname._doc;
 
 
       res.status(200).cookie('access_token', token,{
