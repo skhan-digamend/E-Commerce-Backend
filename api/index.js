@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
+import assetRoutes from "./routes/assets.route.js"
 import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/admin.route.js"
 
@@ -28,7 +29,9 @@ app.listen(3000, () => {
 
 app.use("/api/user", userRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/asset",assetRoutes);
 app.use("/api/admin", adminRoutes);
+
 
 
 //middleware to handle and display errors

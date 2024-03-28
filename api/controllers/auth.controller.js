@@ -62,7 +62,7 @@ export const signin = async (req, res, next) => {
      return next(errorHandler(400,'Invalid password'));
     }
     const token = jwt.sign(
-      {id: validUser._id, isAdmin}, process.env.JWT_SECRET);
+      {id: validUser._id, isAdmin :validUser.isAdmin}, process.env.JWT_SECRET);
 
       //to hide the passwasd from the returned signin information and return the same for security purpose
       //separating password and rest of the information and sending the rest.
@@ -114,7 +114,7 @@ export const signinasguest = async (req, res, next) => {
   }
 };
 
-
+//signup using google
 export const google = async(req,res,next)=>{
   const {email,name}=req.body;
   try {

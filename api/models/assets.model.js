@@ -1,13 +1,14 @@
-import express from 'express';
-import { verifyToken } from '../utils/verifyUser.js';
-import { create, deletepost, getposts, updatepost } from '../controllers/assets.controller.js';
+import mongoose from 'mongoose';
 
-const router = express.Router();
+const assetSchema= new mongoose.Schema(
+    {
+        title:{
+            type: String,
+            required: true,
+            unique: true,
+        },
+    },{timestamps: true}
+);
+const Asset = mongoose.model('Asset',assetSchema);
 
-router.post('/createassets', verifyToken, createassets);
-router.get('/getassets', getassets);
-router.delete('/deleteassets/:assetId/:userId', verifyToken, deleteassets);
-router.put('/updateassets/:assetId/:userId', verifyToken, updateassets);
-
-
-export default router;
+export default Asset;
