@@ -3,6 +3,7 @@ import { errorHandler } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
 import jwt from 'jsonwebtoken'
 
+
 //signup Functionality
 export const signup = async (req, res, next) => {
   const { name, email, phone, password, confirmpassword } = req.body;
@@ -61,7 +62,7 @@ export const signin = async (req, res, next) => {
      return next(errorHandler(400,'Invalid password'));
     }
     const token = jwt.sign(
-      {id: validUser._id}, process.env.JWT_SECRET);
+      {id: validUser._id, isAdmin}, process.env.JWT_SECRET);
 
       //to hide the passwasd from the returned signin information and return the same for security purpose
       //separating password and rest of the information and sending the rest.
@@ -110,5 +111,41 @@ export const signinasguest = async (req, res, next) => {
   }catch(error){
     next(error);
 
+  }
+};
+
+
+export const google = async(req,res,next)=>{
+  const {email,name}=req.body;
+  try {
+    const user= await User.findOne({email});
+    if(user){
+      const token = jwt.sign({id: user._id}, process.env.JWT_SECRET);
+      const {password,...rest}=user._doc;
+      res.status(200).cookie('access_token',token,{
+        httpOnly: true,
+      }).json(rest);
+
+    } else{
+      const generatedPassword= Math.random().toString(36).slice(-8)+ Math.random().toString(36).slice(-8);
+      const hashedPassword = bcryptjs.hashSync(generatedPassword, 10);
+      const newUser= new User({
+        name,
+        email,
+        password: hashedPassword,
+
+
+      });
+      await newUser.save();
+      const token = jwt.sign({id: newUser._id}, process.env.JWT_SECRET);
+      const {password,...rest}= newUser._doc;
+      res.status(200).cookie('access_token', token,{
+        httpOnly: true,
+      })
+      .json(rest);
+    }
+  } catch (error) {
+    next(error);
+    
   }
 };
