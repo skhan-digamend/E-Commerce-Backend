@@ -1,11 +1,11 @@
-import Asset from "../models/category.model.js";
+import Category from "../models/category.model.js";
 import { errorHandler } from "../utils/error.js";
 
 //functionality for create category
 export const createCategory = async (req, res, next) => {
   const title = req.body;
   if (!req.user.isAdmin) {
-    return next(errorHandler(403, "You are not allowed to create a asset"));
+    return next(errorHandler(403, "You are not allowed to create a category"));
   }
   if (!title) {
     return next(errorHandler(400, "Please provide all the required fields "));
@@ -15,7 +15,7 @@ export const createCategory = async (req, res, next) => {
     .join("-")
     .toLowerCase()
     .replace(/[^a-zA-Z0-9-]/g, "");
-  const newCategory = new Asset({
+  const newCategory = new Category({
     ...req.body,
     slug,
     userId: req.user._id,
@@ -32,7 +32,7 @@ export const createCategory = async (req, res, next) => {
 
 export const getCategory = async (req, res, next) => {
   try {
-    const allCategory = await Asset.find({
+    const allCategory = await Category.find({
       ...(req.query.userId && { userId: req.query.userId }),
       ...(req.query.title && { title: req.query.title }),
       ...(req.query.categoryId && { _id: req.query.categoryId }),
@@ -52,7 +52,7 @@ export const deleteCategory = async (req, res, next) => {
     );
   }
   try {
-    await Asset.findByIdAndDelete(req.params.categoryId);
+    await Category.findByIdAndDelete(req.params.categoryId);
     res.status(200).json("The post has been deleted");
   } catch (error) {
     next(error);
@@ -66,7 +66,7 @@ export const editCategory = async (req, res, next) => {
     return next(errorHandler(403, "You are not allowed to edit this post"));
   }
   try {
-    const updatedCategory = await Asset.findByIdAndUpdate(
+    const updatedCategory = await Category.findByIdAndUpdate(
       req.params.categoryId,
       {
         $set: {
