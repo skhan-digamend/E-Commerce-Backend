@@ -55,7 +55,6 @@ export const createAsset = async (req, res, next) => {
         ...(req.query.fileSize && { _id: req.query.fileSize}),
         ...(req.query.fileFormat && { _id: req.query.fileFormat}),
         ...(req.query.price && { _id: req.query.price }),
-        // ...(req.query.assetId && { _id: req.query.assetId }),
       });
       res.status(200).json({
         allAssets,
