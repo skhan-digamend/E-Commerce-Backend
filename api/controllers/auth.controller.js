@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import UserAsGuest from "../models/userasguest.model.js";
 import { errorHandler } from "../utils/error.js";
 import bcryptjs from "bcryptjs";
 import jwt from 'jsonwebtoken'
@@ -44,6 +45,34 @@ export const signup = async (req, res, next) => {
   }
 };
 
+
+
+//signup as guest
+
+export const signupasguest = async (req, res, next) => {
+  const { name, phone} = req.body;
+
+  if (
+    !name ||
+    !phone ||
+    name === "" ||
+    phone === "" 
+  ){
+    next(errorHandler(400, "All fields are required"));
+  }
+
+  const newUser = new UserAsGuest({
+    name,
+    phone
+  });
+  try {
+    await newUser.save();
+    res.json("Signup as guest successful");
+  } catch (error) {
+    next(error);
+  }
+};
+
 //Signin functionality
 
 export const signin = async (req, res, next) => {
@@ -82,26 +111,26 @@ export const signin = async (req, res, next) => {
 //signin as guest
 
 export const signinasguest = async (req, res, next) => {
-  const {name,phone,password,confirmpassword} = req.body;
+  const {name,phone} = req.body;
 
   if(!name || !phone || !name=== '' ||  phone === ''){
     next(errorHandler(400, 'All fields are required'));
   }
   try{
-    const validGuestname = await User.findOne({name});
+    const validGuestname = await UserAsGuest.findOne({name});
     if(!validGuestname){
      return next(errorHandler(404,'Invalid name'));
     }
-    const validGuestPhone = await User.findOne({phone});
+    const validGuestPhone = await UserAsGuest.findOne({phone});
     if(!validGuestPhone){
      return next(errorHandler(400,'Phone number not exist'));
     }
     const token = jwt.sign(
       {id: validGuestname._id}, process.env.JWT_SECRET);
 
-      //to hide the passwasd from the returned signin information and return the same for security purpose
+      //to hide the password from the returned signin information and return the same for security purpose
       //separating password and rest of the information and sending the rest.
-      const{ password: pass,confirmpassword: confirmpassword, ...rest}= validGuestname._doc;
+      const { password: pass,confirmpassword: confirmpassword, ...rest}= validGuestname._doc;
 
 
       res.status(200).cookie('access_token', token,{

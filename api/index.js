@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRoutes from "./routes/user.route.js";
 import authRoutes from "./routes/auth.route.js";
-import assetRoutes from "./routes/assets.route.js"
+import assetRoutes from "./routes/category.route.js"
 import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/admin.route.js"
 

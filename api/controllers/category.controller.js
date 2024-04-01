@@ -1,4 +1,4 @@
-import Asset from "../models/assets.model.js";
+import Asset from "../models/category.model.js";
 import { errorHandler } from "../utils/error.js";
 
 //functionality for create category
@@ -18,7 +18,7 @@ export const createCategory = async (req, res, next) => {
   const newCategory = new Asset({
     ...req.body,
     slug,
-    userId: req.user.id,
+    userId: req.user._id,
   });
   try {
     const savedCategory = await newCategory.save();
@@ -46,37 +46,37 @@ export const getCategory = async (req, res, next) => {
 };
 
 export const deleteCategory = async (req, res, next) => {
-  if(!req.user.isAdmin || req.user._id !== req.params.userId){
-    return next(errorHandler(403, 'You are not allowed to delete this category'));
+  if (!req.user.isAdmin || req.user._id !== req.params.userId) {
+    return next(
+      errorHandler(403, "You are not allowed to delete this category")
+    );
   }
   try {
     await Asset.findByIdAndDelete(req.params.categoryId);
-    res.status(200).json('The post has been deleted');
-    
+    res.status(200).json("The post has been deleted");
   } catch (error) {
     next(error);
-    
   }
-
 };
 
-export const editCategory = async(req,res, next)=>{
-  if(!req.user.isAdmin || req.user._id != req.params.userId){
-    return next(errorHandler(403, 'You are not allowed to edit this post'));
+
+//edit category
+export const editCategory = async (req, res, next) => {
+  if (!req.user.isAdmin || req.user._id != req.params.userId) {
+    return next(errorHandler(403, "You are not allowed to edit this post"));
   }
   try {
     const updatedCategory = await Asset.findByIdAndUpdate(
-      req.params.categoryId,{
-        $set:{
-          title: req.body.title
-        }
-      }, {new: true}
-    )
+      req.params.categoryId,
+      {
+        $set: {
+          title: req.body.title,
+        },
+      },
+      { new: true }
+    );
     res.status(200).json(updatedCategory);
-    
   } catch (error) {
     next(error);
-    
   }
-
-}
+};
