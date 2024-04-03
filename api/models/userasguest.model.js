@@ -12,11 +12,10 @@ const userGuestSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    isAdmin:{
+    isAdmin: {
       type: Boolean,
       default: false,
     },
-    
   },
   { timestamps: true }
 );

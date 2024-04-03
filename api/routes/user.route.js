@@ -10,13 +10,12 @@ const router = express.Router();
 
 router.get("/test", test);
 //delete account functionality route
-router.delete("/delete/:userId", verifyToken,deleteUser);
+router.delete("/delete/:userId", verifyToken, deleteUser);
 //logout functionality route
-router.post('/logout',logout);
+router.post("/logout", logout);
 //get users information in admin side
-router.get('/getusers', verifyToken ,getUsers);
+router.get("/getusers", verifyToken, getUsers);
 //get all guest users
-router.get('/getallguestusers',verifyToken,getAllGuestUsers)
-
+router.get("/getallguestusers", verifyToken, getAllGuestUsers);
 
 export default router;

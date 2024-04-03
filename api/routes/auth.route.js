@@ -12,11 +12,11 @@ const router = express.Router();
 //signup route
 router.post("/signup", signup);
 //signupasguest
-router.post("/signupasguest",signupasguest);
+router.post("/signupasguest", signupasguest);
 //signin route
 router.post("/signin", signin);
 //signinasguest route
-router.post("/signinasguest",signinasguest);
+router.post("/signinasguest", signinasguest);
 //google
 router.post("/google", google);
 

@@ -59,7 +59,6 @@ export const deleteCategory = async (req, res, next) => {
   }
 };
 
-
 //edit category
 export const editCategory = async (req, res, next) => {
   if (!req.user.isAdmin || req.user._id != req.params.userId) {

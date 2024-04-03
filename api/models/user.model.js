@@ -25,14 +25,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    isAdmin:{
+    isAdmin: {
       type: Boolean,
       default: false,
     },
-    userDesignIdea:{
+    userDesignIdea: {
       type: String,
     },
-    
   },
   { timestamps: true }
 );

@@ -5,11 +5,12 @@ const wishlistSchema = new mongoose.Schema(
     userId: {
       type: String,
     },
-    products: [{
+    products: [
+      {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'asset'
-    }]
-    
+        ref: "asset",
+      },
+    ],
   },
   { timestamps: true }
 );
