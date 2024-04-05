@@ -5,7 +5,6 @@ const categorySchema = new mongoose.Schema(
     title: {
       type: String,
       required: true,
-      unique: true,
     },
     slug: {
       type: String,
@@ -15,6 +14,6 @@ const categorySchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-const Category = mongoose.model("category", categorySchema);
+const Category = mongoose.model("Category", categorySchema);
 
 export default Category;

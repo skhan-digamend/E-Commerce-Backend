@@ -1,9 +1,11 @@
 import Asset from "../models/asset.model.js";
+import Category from "../models/category.model.js";
 import { errorHandler } from "../utils/error.js";
 
-//to craete asset
+//to create asset
 export const createAsset = async (req, res, next) => {
-  const { assetName, Id, fileSize, fileFormat, price } = req.body;
+  const { assetName, Id, fileSize, fileFormat, price, category} = req.body;
+
   if (!req.user.isAdmin) {
     return next(errorHandler(403, "You are not allowed to create a category"));
   }
@@ -26,6 +28,14 @@ export const createAsset = async (req, res, next) => {
     .join("-")
     .toLowerCase()
     .replace(/[^a-zA-Z0-9-]/g, "");
+
+    const existcategory =await Category.findById(req.body.category);
+    if(!existcategory){
+      return next(errorHandler(400,"invalid category"))
+    }
+
+
+
   const newAsset = new Asset({
     ...req.body,
     slug,
@@ -66,7 +76,8 @@ export const getAssets = async (req, res, next) => {
       ...(req.query.fileSize && { _id: req.query.fileSize }),
       ...(req.query.fileFormat && { _id: req.query.fileFormat }),
       ...(req.query.price && { _id: req.query.price }),
-    });
+      ...(req.query.category&& {_id:req.query.category}),
+    }).populate('category');
     res.status(200).json({
       allAssets,
     });
@@ -90,7 +101,8 @@ export const editAssets = async (req, res, next) => {
           Id: req.body.Id,
           fileSize: req.body.fileSize,
           fileFormat: req.body.fileFormat,
-          price: req.body.fileFormat,
+          price: req.body.price,
+          category: req.body.category
         },
       },
       { new: true }
@@ -100,3 +112,12 @@ export const editAssets = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const getAssetsById=async (req,res,next)=>{
+  const assets= await Asset.findById(req.params.id).populate('category');
+  if(!assets){
+    res.status(500).json({success:false})
+  }
+  res.send(assets);
+}

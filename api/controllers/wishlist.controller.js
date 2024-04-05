@@ -1,9 +1,68 @@
-// import wishList from "../models/wishlist.model.js";
-// import Asset from "../models/asset.model.js";
-// import User from "../models/user.model.js";
-// import { errorHandler } from "../utils/error.js";
+import Wishlist from "../models/wishlist.model.js";
+import Asset from "../models/asset.model.js";
+import User from "../models/user.model.js";
+import { errorHandler } from "../utils/error.js";
 
 // //wishlist
+
+export const AddProductToWishlist = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { assetId } = req.body;
+
+        // Check if the user exists
+        const user = await User.findById(id);
+        if (!user) {
+            return next(errorHandler(404, "User not found"));
+        }
+
+        // Find or create the wishlist for the user
+        let wishlist = await Wishlist.findOne({ userId: id });
+        if (!wishlist) {
+            wishlist = new Wishlist({
+                userId: id,
+                products: [assetId]
+            });
+            await wishlist.save();
+            return res.status(201).json(wishlist);
+        }
+
+        // Check if the product is already in the wishlist
+        if (wishlist.products.includes(assetId)) {
+            return res.status(400).json({ error: 'Product already in wishlist' });
+        }
+
+        // Add the product to the wishlist
+        wishlist.products.push(assetId);
+        await wishlist.save();
+        res.status(200).json(wishlist);
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 //  // Add a product to the user's wishlist
@@ -11,36 +70,37 @@
 // export const AddProductToWishlist= async (req,res,next)=>{
 //     try{
 
-//         const {id}= req.user;
-//         const {prodId} = req.body;
+//         const { id } = req.params;
+//         const { assetId } = req.body;
 //         const wishuser = await User.findById(id);
 //         if(!wishuser){
 //                 return next(errorHandler(403, "Users not Found"));
                   
 //             }
 
-//             const selectedProduct = await Asset.findById(prodId);
+//             const selectedProduct = await Asset.findById(assetId);
 //         if(!selectedProduct){
 //             return next(errorHandler(403,"Product not Found"));
 //         }
 
 //         const wishlist = await wishList.findOne(id);
-//         if (wishlist && wishlist.products.includes(prodId)) {
+//         if (wishlist && wishlist.products.includes(assetId)) {
 //             return res.status(400).json({ error: 'Product already in wishlist'});
 //         }
 
 //         // If wishlist doesn't exist, create a new one
 //         if (!wishlist) {
 //             const newWishlist = new wishlist({
+//                 userId : id,
                
-//                 products: [prodId]
+//                 products: [assetId]
 //             });
 //             await newWishlist.save();
 //             return res.status(201).json(newWishlist);
 //         }
 
 //         // Add the product to the wishlist
-//         wishlist.products.push(prodId);
+//         wishlist.products.push(assetId);
 //         await wishlist.save();
 //         res.status(200).json(wishlist);
 
