@@ -4,7 +4,7 @@ import { errorHandler } from "../utils/error.js";
 
 //to create asset
 export const createAsset = async (req, res, next) => {
-  const { assetName, Id, fileSize, fileFormat, price, category} = req.body;
+  const { assetName, Id, fileSize, fileFormat, price, category } = req.body;
 
   if (!req.user.isAdmin) {
     return next(errorHandler(403, "You are not allowed to create a category"));
@@ -29,12 +29,10 @@ export const createAsset = async (req, res, next) => {
     .toLowerCase()
     .replace(/[^a-zA-Z0-9-]/g, "");
 
-    const existcategory =await Category.findById(req.body.category);
-    if(!existcategory){
-      return next(errorHandler(400,"invalid category"))
-    }
-
-
+  const existcategory = await Category.findById(req.body.category);
+  if (!existcategory) {
+    return next(errorHandler(400, "invalid category"));
+  }
 
   const newAsset = new Asset({
     ...req.body,
@@ -69,15 +67,11 @@ export const deleteAsset = async (req, res, next) => {
 
 export const getAssets = async (req, res, next) => {
   try {
-    const allAssets = await Asset.find({
-      ...(req.query.userId && { userId: req.query.userId }),
-      ...(req.query.assetName && { title: req.query.assetName }),
-      ...(req.query.Id && { _id: req.query.Id }),
-      ...(req.query.fileSize && { _id: req.query.fileSize }),
-      ...(req.query.fileFormat && { _id: req.query.fileFormat }),
-      ...(req.query.price && { _id: req.query.price }),
-      ...(req.query.category&& {_id:req.query.category}),
-    }).populate('category');
+    let filter = {};
+    if (req.query.category) {
+      filter = { category: req.query.category.split(",") };
+    }
+    const allAssets = await Asset.find(filter).populate("category");
     res.status(200).json({
       allAssets,
     });
@@ -102,7 +96,7 @@ export const editAssets = async (req, res, next) => {
           fileSize: req.body.fileSize,
           fileFormat: req.body.fileFormat,
           price: req.body.price,
-          category: req.body.category
+          category: req.body.category,
         },
       },
       { new: true }
@@ -113,11 +107,10 @@ export const editAssets = async (req, res, next) => {
   }
 };
 
-
-export const getAssetsById=async (req,res,next)=>{
-  const assets= await Asset.findById(req.params.id).populate('category');
-  if(!assets){
-    res.status(500).json({success:false})
+export const getAssetsById = async (req, res, next) => {
+  const assets = await Asset.findById(req.params.id).populate("category");
+  if (!assets) {
+    res.status(500).json({ success: false });
   }
   res.send(assets);
-}
+};
