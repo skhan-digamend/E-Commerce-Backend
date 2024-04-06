@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+const validateEmail = (email) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -10,7 +17,11 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true,
+      validate:{
+        validator:validateEmail,
+        message: props =>
+      `${props.value} is not a valid email`
+      }
     },
     phone: {
       type: Number,
