@@ -72,10 +72,20 @@ export const editCategory = async (req, res, next) => {
           title: req.body.title,
         },
       },
-      { new: true }
+      { new: true } //to update the new one
     );
     res.status(200).json(updatedCategory);
   } catch (error) {
     next(error);
   }
 };
+
+
+export const getCategoryById = async(req,res,next)=>{
+  const category = await Category.findById(req.params.id);
+  if(!category){
+    res.status(500).json({message: 'Category with the given id was not exist'});
+  }
+  res.status(200).send(category);
+
+}
