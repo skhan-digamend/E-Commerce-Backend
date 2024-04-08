@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/admin.route.js";
 import assetRoutes from "./routes/asset.route.js";
 import wishlistRoutes from "./routes/wishlist.route.js"
+// import ideaRoutes from "./routes/idea.route.js"
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use("/api/category", categoryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/asset", assetRoutes);
 app.use("/api/wishlist",wishlistRoutes);
+// app.use("/api/idea",ideaRoutes);
 
 //middleware to handle and display errors
 app.use((err, req, res, next) => {

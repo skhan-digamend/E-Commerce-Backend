@@ -21,14 +21,14 @@ export const AddProductToWishlist = async (req, res, next) => {
         if (!wishlist) {
             wishlist = new Wishlist({
                 userId: id,
-                products: [assetId.id]
+                products: [assetId]
             });
             await wishlist.save();
             return res.status(201).json(wishlist);
         }
 
         // Check if the product is already in the wishlist
-        if (wishlist.products.includes(assetId.id)) {
+        if (wishlist.products.includes(assetId)) {
             return res.status(400).json({ error: 'Product already in wishlist' });
         }
 
