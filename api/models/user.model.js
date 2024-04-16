@@ -17,16 +17,15 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: true,
-      validate:{
-        validator:validateEmail,
-        message: props =>
-      `${props.value} is not a valid email`
-      }
+      validate: {
+        validator: validateEmail,
+        message: (props) => `${props.value} is not a valid email`,
+      },
     },
     phone: {
       type: Number,
       required: true,
-      min:[10,"Enter valid phone number"]
+      min: [10, "Enter valid phone number"],
     },
     password: {
       type: String,
@@ -40,9 +39,39 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    userDesignIdea: {
-      type: String,
+    isActive: {
+      type: Boolean,
+      default: () => true,
     },
+    wishlist: [mongoose.Schema.Types.ObjectId],
+    createdAt: {
+      type: Date,
+      default: () => Date.now(),
+    },
+    address:[{
+      FirstName: String,
+      SecondName: String,
+      addressLine1 : String,
+      addressLine2 : String,
+      country : String,
+      region: String,
+      city : String,
+      state : String,
+      zipcode : String,
+      isDefault: {
+          type: Boolean,
+          default: () => false
+      }     
+  }],
+//   wallet:[{
+//     amount: Number,
+//     timestamp: {
+//         type: Date,
+//         default: () => Date.now()
+//     },
+//     transaction: String,
+//     remarks: String
+// }],
   },
   { timestamps: true }
 );

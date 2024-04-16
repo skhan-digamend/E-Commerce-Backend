@@ -4,7 +4,7 @@ import { errorHandler } from "../utils/error.js";
 
 //to create asset
 export const createAsset = async (req, res, next) => {
-  const { assetName, Id, fileSize, fileFormat, price, category } = req.body;
+  const { assetName, Id, fileSize, fileFormat, price, category, poly, description, assetImage } = req.body;
 
   if (!req.user.isAdmin) {
     return next(errorHandler(403, "You are not allowed to create a category"));
@@ -15,11 +15,17 @@ export const createAsset = async (req, res, next) => {
     !fileSize ||
     !fileFormat ||
     !price ||
+    !category||
+    !poly ||
+    !description||
     assetName == " " ||
     Id == " " ||
     fileSize == " " ||
     fileFormat == " " ||
-    price == " "
+    price == " "||
+    category == " "||
+    poly==" "||
+    description==""
   ) {
     return next(errorHandler(400, "Please provide all the required fields "));
   }

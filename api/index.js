@@ -8,7 +8,8 @@ import categoryRoutes from "./routes/category.route.js";
 import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/admin.route.js";
 import assetRoutes from "./routes/asset.route.js";
-import wishlistRoutes from "./routes/wishlist.route.js"
+import cartRoutes from "./routes/cart.route.js";
+import orderRoutes from "./routes/orders.routes.js"
 // import ideaRoutes from "./routes/idea.route.js"
 
 dotenv.config();
@@ -37,8 +38,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/category", categoryRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/asset", assetRoutes);
-app.use("/api/wishlist",wishlistRoutes);
-// app.use("/api/idea",ideaRoutes);
+app.use("/api/cart", cartRoutes);
+app.use("/api/orders",orderRoutes);
 
 //middleware to handle and display errors
 app.use((err, req, res, next) => {
@@ -51,4 +52,4 @@ app.use((err, req, res, next) => {
   });
 });
 
-//
+
