@@ -52,3 +52,14 @@ export const RemoveItemFromCart = async (req,res,next)=>{
         res.status(500).json(err);
       }
 }
+
+//get All carts of all users
+
+export const GetAllUsersCart= async (req,res,next)=>{
+    try {
+        const carts = await Cart.find();
+        res.status(200).json(carts);
+      } catch (err) {
+        res.status(500).json(err);
+      }
+}
