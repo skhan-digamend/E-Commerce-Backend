@@ -3,11 +3,11 @@ import { errorHandler } from "../utils/error.js";
 
 //functionality for create category
 export const createCategory = async (req, res, next) => {
-  const title = req.body;
+  // const {title,categoryImage} = req.body;
   if (!req.user.isAdmin) {
     return next(errorHandler(403, "You are not allowed to create a category"));
   }
-  if (!title) {
+  if (!req.body.title) {
     return next(errorHandler(400, "Please provide all the required fields "));
   }
   const slug = req.body.title
@@ -35,6 +35,7 @@ export const getCategory = async (req, res, next) => {
     const allCategory = await Category.find({
       ...(req.query.userId && { userId: req.query.userId }),
       ...(req.query.title && { title: req.query.title }),
+      ...(req.query.categoryImage && {categoryImage: req.query.categoryImage}),
       ...(req.query.categoryId && { _id: req.query.categoryId }),
     });
     res.status(200).json({
@@ -70,6 +71,7 @@ export const editCategory = async (req, res, next) => {
       {
         $set: {
           title: req.body.title,
+          categoryImage: req.body.categoryImage,
         },
       },
       { new: true } //to update the new one
