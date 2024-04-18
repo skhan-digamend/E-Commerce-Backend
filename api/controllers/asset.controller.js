@@ -1,54 +1,71 @@
-import Asset from "../models/asset.model.js";
-import Category from "../models/category.model.js";
+import Asset from "../models/asset.model.js"
+import { bytesToSize } from "../utils/bytesToSize.js";
 import { errorHandler } from "../utils/error.js";
+import { generateS3FileUrl } from "../utils/s3UploadClient.js";
 
-//to create asset
+const getFileExtension = (filename) => {
+  return filename.split('.').pop();
+};
+
+
+// Create a Single Asset
 export const createAsset = async (req, res, next) => {
-  const { assetName, Id, fileSize, fileFormat, price, category } = req.body;
-
-  if (!req.user.isAdmin) {
-    return next(errorHandler(403, "You are not allowed to create a category"));
-  }
-  if (
-    !assetName ||
-    !Id ||
-    !fileSize ||
-    !fileFormat ||
-    !price ||
-    assetName == " " ||
-    Id == " " ||
-    fileSize == " " ||
-    fileFormat == " " ||
-    price == " "
-  ) {
-    return next(errorHandler(400, "Please provide all the required fields "));
-  }
-  const slug = req.body.assetName
-    .split(" ")
-    .join("-")
-    .toLowerCase()
-    .replace(/[^a-zA-Z0-9-]/g, "");
-
-  const existcategory = await Category.findById(req.body.category);
-  if (!existcategory) {
-    return next(errorHandler(400, "invalid category"));
-  }
-
-  const newAsset = new Asset({
-    ...req.body,
-    slug,
-    userId: req.user.id,
-  });
   try {
-    const savedAsset = await newAsset.save();
-    res.status(201).json(savedAsset);
-  } catch (error) {
-    next(error);
+  if (!req.files) res.status(400).json({ error: 'No files were uploaded.' })
+ const uploadedFiles=req.files;
+const {assetName,price,description}=req.body;
+
+const files =  uploadedFiles.map((file) => ({
+  name: file.originalname,
+  type: file.mimetype,
+  size: bytesToSize(file.size),
+  format: getFileExtension(file.originalname),
+  url:generateS3FileUrl(file.key)
+ 
+}));
+
+const asset = new Asset({
+  assetName,
+  price,
+  description,
+  files
+})
+
+const createdAssets = await Asset.insertMany(asset);
+
+res.status(201).json({
+    message: 'Successfully uploaded ' + req.files.length + ' files!',
+    files: req.files
+  })
+}
+
+   catch (error) {
+      console.error('Error creating assets:', error);
+  
+      // Check if error is a Mongoose validation error
+      if (error.name === 'ValidationError') {
+        return res.status(400).json({ error: 'Validation error. Please check your input data.' });
+      }
+  
+      next(errorHandler(error));
+    
   }
 };
 
-// Delete Asset
 
+// Get All Assets
+export const getAllAssets = async (req, res, next) => {
+  try {
+    const assets = await Asset.find();
+    res.status(200).json({ assets });
+  } catch (error) {
+    console.error('Error fetching assets:', error);
+    next(errorHandler(error));
+  }
+};
+
+
+// Delete Asset
 export const deleteAsset = async (req, res, next) => {
   if (!req.user.isAdmin || req.user._id !== req.params.userId) {
     return next(
@@ -63,22 +80,8 @@ export const deleteAsset = async (req, res, next) => {
   }
 };
 
-//get all assets
+//get Assets by Category 
 
-export const getAssets = async (req, res, next) => {
-  try {
-    let filter = {};
-    if (req.query.category) {
-      filter = { category: req.query.category.split(",") };
-    }
-    const allAssets = await Asset.find(filter).populate("category");
-    res.status(200).json({
-      allAssets,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
 
 //edit assets
 
@@ -114,3 +117,48 @@ export const getAssetsById = async (req, res, next) => {
   }
   res.send(assets);
 };
+
+
+
+
+
+
+
+
+
+// export const createAsset = async (req, res, next) => {
+//   try{
+//     const uploadFile = upload.single('file');
+//     if (!req.file) {
+//       return res.status(400).json({ error: 'No file uploaded' });
+//     }
+//   const { assetName, Id, fileSize, fileFormat, price, category } = req.body;
+//   const {originalname,key,location}=req.file;
+
+
+//   if (!req.user.isAdmin) {
+//     return next(errorHandler(403, "You are not allowed to create a category"));
+//   }
+ 
+
+
+//   const existcategory = await Category.findById(req.body.category);
+//   if (!existcategory) {
+//     return next(errorHandler(400, "invalid category"));
+//   }
+
+//   const newAsset = new Asset({
+//     ...req.body,
+//     assetName:assetName,
+//     s3key:key,
+//     url:location
+//   });
+
+//   const savedAsset = await newAsset.save();
+//   res.status(201).json(savedAsset);
+//   }
+//   catch (error) {
+//     next(errorHandler(error));
+//   };}
+
+// Delete asset

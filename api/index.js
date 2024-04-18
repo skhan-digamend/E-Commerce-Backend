@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -8,9 +8,9 @@ import categoryRoutes from "./routes/category.route.js";
 import cookieParser from "cookie-parser";
 import adminRoutes from "./routes/admin.route.js";
 import assetRoutes from "./routes/asset.route.js";
-import wishlistRoutes from "./routes/wishlist.route.js"
-import feedbackRoutes from "./routes/feedback.route.js"  
-
+import wishlistRoutes from "./routes/wishlist.route.js";
+import feedbackRoutes from "./routes/feedback.route.js"  ;
+import bodyParser from "body-parser";
 
 dotenv.config();
 
@@ -29,6 +29,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 
+
 app.listen(3000, () => {
   console.log("Server is  listening to port 3000!");
 });
@@ -40,6 +41,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/asset", assetRoutes);
 app.use("/api/wishlist",wishlistRoutes);
 app.use("/api/feedback",feedbackRoutes);
+// app.use("api/asset",uploadRoutes);
 
 
 //middleware to handle and display errors
