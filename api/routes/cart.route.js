@@ -8,7 +8,8 @@ const router = express.Router();
 router.post("/createCart",verifyTokenAuthorization, createCart);
 router.put("/updateCart/:id",verifyTokenAuthorization,UpdateCart);//cart ID should replace id in api
 router.get("/getUserCart/:userId",verifyTokenAuthorization,getUserCart);
-router.get("/getAllUsersCart",verifyTokenAndAdmin,GetAllUsersCart);
+router.get("/getAllUsersCart",verifyTokenAndAdmin,verifyToken,GetAllUsersCart);
 router.delete("/RemoveItemFromCart/:id",verifyTokenAuthorization,RemoveItemFromCart);
 
 export default router;
+
