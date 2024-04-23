@@ -2,15 +2,10 @@ import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema(
   {
-    title: {
+    categoryName: {
       type: String,
       required: true,
-    },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-    },
+    }
   },
   { timestamps: true }
 );
